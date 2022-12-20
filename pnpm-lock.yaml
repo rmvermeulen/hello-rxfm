@@ -9,6 +9,7 @@ specifiers:
   eslint: ^7.26.0
   html-webpack-plugin: ^5.3.1
   jest: ^26.6.3
+  rambda: ^7.4.0
   rxfm: 2.1.1
   rxjs: ^7.0.0
   style-loader: ^2.0.0
@@ -20,6 +21,7 @@ specifiers:
   webpack-dev-server: ^3.11.2
 
 dependencies:
+  rambda: 7.4.0
   rxfm: 2.1.1_rxjs@7.8.0
   rxjs: 7.8.0
 
@@ -5020,6 +5022,10 @@ packages:
   /queue-microtask/1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
     dev: true
+
+  /rambda/7.4.0:
+    resolution: {integrity: sha512-A9hihu7dUTLOUCM+I8E61V4kRXnN4DwYeK0DwCBydC1MqNI1PidyAtbtpsJlBBzK4icSctEcCQ1bGcLpBuETUQ==}
+    dev: false
 
   /randombytes/2.1.0:
     resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}

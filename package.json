@@ -21,6 +21,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "rambda": "^7.4.0",
     "rxfm": "2.1.1",
     "rxjs": "^7.0.0"
   },
