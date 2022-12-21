@@ -1,6 +1,6 @@
 import RxFM, { DefaultProps } from "rxfm";
 import { Observable, map } from "rxjs";
-import { setState } from "../../store/app-state";
+import { setState } from "../../store/state";
 
 export const Link = ({
   href,

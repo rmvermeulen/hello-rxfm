@@ -1,7 +1,7 @@
-import { evolve, append } from "rambda";
+import { append, evolve } from "rambda";
 import RxFM from "rxfm";
 import { BehaviorSubject } from "rxjs";
-import { mapState } from "../store/app-state";
+import { mapState } from "../store/state";
 
 export const ItemManager = () => {
   const editedItem = new BehaviorSubject("");

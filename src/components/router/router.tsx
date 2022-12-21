@@ -1,7 +1,7 @@
-import { path, intersperse, RamdaPath } from "rambda";
+import { RamdaPath, intersperse, path } from "rambda";
 import RxFM, { ElementChild } from "rxfm";
-import { combineLatest, switchMap, defer } from "rxjs";
-import { selectState, setState } from "../../store/app-state";
+import { combineLatest, defer, switchMap } from "rxjs";
+import { selectState, setState } from "../../store/state";
 
 export type RouteDetails = {
   name: string;

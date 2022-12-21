@@ -1,18 +1,17 @@
 import { evolve, pipe, toPairs } from "rambda";
 import RxFM, { mapToComponents } from "rxfm";
 import {
-  of,
-  map,
-  Observable,
-  switchMap,
-  filter,
   BehaviorSubject,
-  combineLatestAll,
+  Observable,
   combineLatestWith,
+  filter,
+  map,
+  of,
+  switchMap,
 } from "rxjs";
-import { RouteMap, RouteDetails } from "./router";
-import { Link } from "./link";
-import { initialState, setState, state } from "../../store/app-state";
+import { state } from "../store/state";
+import { Link } from "./router/link";
+import { RouteDetails, RouteMap } from "./router/router";
 
 const RecursiveRouteList = ({
   routes,
