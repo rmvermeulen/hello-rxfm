@@ -1,8 +1,9 @@
-import RxFM from "rxfm";
+import RxFM, { mapToComponents } from "rxfm";
 import { BehaviorSubject } from "rxjs";
 import { store } from "../app/app";
 
 export const ItemManager = () => {
+  const items$ = store.selectState("items");
   const editedItem = new BehaviorSubject("");
   return (
     <div>
@@ -25,6 +26,14 @@ export const ItemManager = () => {
       >
         Add
       </button>
+      <ul>
+        {items$.pipe(
+          mapToComponents((item) => {
+            item.subscribe((i) => console.log("item:", i));
+            return <li>{item}</li>;
+          })
+        )}
+      </ul>
     </div>
   );
 };
