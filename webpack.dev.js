@@ -1,5 +1,5 @@
-const path = require('path');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require("path");
+var HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = [
   {
@@ -8,12 +8,14 @@ module.exports = [
     devServer: {
       contentBase: path.join(__dirname, "dist"),
       port: 4200,
-      compress: true
+      compress: true,
+      historyApiFallback: true,
     },
-    entry: './src/app/index.tsx',
+    entry: "./src/app/index.tsx",
     output: {
-      filename: 'app.bundle.js',
-      path: path.resolve(__dirname, 'dist'),
+      publicPath: "/",
+      filename: "app.bundle.js",
+      path: path.resolve(__dirname, "dist"),
     },
     resolve: {
       extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
@@ -23,15 +25,15 @@ module.exports = [
         {
           test: /\.ts(x)?$/,
           loader: "ts-loader",
-          exclude: '/node_modules/'
+          exclude: "/node_modules/",
         },
         {
           test: /\.css$/i,
-          use: ['style-loader', 'css-loader'],
-          exclude: '/node_modules/'
+          use: ["style-loader", "css-loader"],
+          exclude: "/node_modules/",
         },
-      ]
+      ],
     },
-    plugins: [new HtmlWebpackPlugin()]
-  }
+    plugins: [new HtmlWebpackPlugin()],
+  },
 ];
