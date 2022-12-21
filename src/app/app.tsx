@@ -50,10 +50,12 @@ export const getRouteFragment = (url: string): string => {
 };
 
 export const App = () => {
+  const route = getRouteFragment(window.location.href);
   store.dispatch({
     type: "set url",
-    payload: getRouteFragment(window.location.href + "examples"),
+    payload: route || "examples",
   });
+
   store.dispatch({
     type: "set routes",
     payload: {
