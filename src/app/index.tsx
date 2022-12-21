@@ -17,6 +17,7 @@ import {
   append,
   evolve,
   intersperse,
+  mapObjIndexed,
   path,
   pipe,
   prop,
@@ -31,12 +32,40 @@ type RouteDetails = {
 };
 type RouteMap = { [href: string]: ElementChild | RouteDetails };
 
+type SubjectType<T> = T extends BehaviorSubject<infer X> ? X : never;
 const state = new BehaviorSubject({
   url: "",
   routes: {} as RouteMap,
   items: ["some item!"],
 });
-export type State = typeof state.value;
+
+export type State = SubjectType<typeof state>;
+type Action<T = any> = { type: string; payload: T };
+type Reducer<K extends keyof State> = (
+  state: State[K],
+  action: Action
+) => State[K];
+
+type ReducerMap = { [K in keyof State]: Reducer<K> };
+
+const store = {
+  state,
+  reducers: {
+    url(url, action) {
+      if (action.type === "set route") {
+        return action.payload;
+      }
+      return url;
+    },
+  } as ReducerMap,
+  dispatch(action: Action): void {
+    mapObjIndexed((value, key) =>
+      key in this.reducers
+        ? this.reducers[key as keyof State](value as any, action)
+        : value
+    );
+  },
+};
 
 const mapState = (fn: (state: State) => State) => state.next(fn(state.value));
 const setState = (patch: Partial<State>) =>
