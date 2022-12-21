@@ -3,9 +3,35 @@ import { ItemManager } from "../components/item-manager";
 import { AppRouter } from "../components/router/router";
 import { SideBar } from "../components/side-bar";
 import { Timer } from "../components/timer";
-import { selectState, setState } from "../store/state";
-import { store } from "../store/store";
+import { initialState } from "../store/state";
+
 import { Examples } from "./examples";
+import { Store } from "../store/store";
+import { append } from "rambda";
+
+export const store = new Store(initialState, {
+  url(url, action) {
+    if (action.type === "set url") {
+      return action.payload;
+    }
+    return url;
+  },
+  routes(url, action) {
+    if (action.type === "set routes") {
+      return action.payload;
+    }
+    return url;
+  },
+  items(items, action) {
+    if (action.type === "set items") {
+      return action.payload;
+    }
+    if (action.type === "add item") {
+      return append(action.payload, items);
+    }
+    return items;
+  },
+});
 
 export const getRouteFragment = (url: string): string => {
   const match = url.match(/^https?:\/\/localhost:\d+\/(.*)/);
@@ -39,7 +65,7 @@ export const App = () => {
   return (
     <div id="app">
       <div class="sidebar">
-        <SideBar routes$={selectState("routes")} />
+        <SideBar routes$={store.selectState("routes")} />
       </div>
       <div class="layout">
         <AppRouter />

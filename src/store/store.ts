@@ -1,42 +1,56 @@
-import { mapObjIndexed } from "rambda";
-import { BehaviorSubject } from "rxjs";
-import { Action, ReducerMap, State, state } from "./state";
+import { mapObjIndexed, prop } from "rambda";
+import {
+  BehaviorSubject,
+  Observable,
+  OperatorFunction,
+  distinctUntilChanged,
+  map,
+} from "rxjs";
+import { Action, ReducerMap } from "./state";
 
-export class Store<TState> {
+export class Store<TState extends Record<string, unknown>> {
   private readonly state$: BehaviorSubject<TState>;
-  constructor(initialState: TState) {
+  constructor(
+    private readonly initialState: TState,
+    private readonly reducers: ReducerMap<TState>
+  ) {
     this.state$ = new BehaviorSubject(initialState);
+  }
+  reset() {
+    this.state$.next(this.initialState);
   }
   getState() {
     return this.state$.asObservable();
   }
-  dispatch() {}
-}
-export const store = {
-  state,
-  reducers: {
-    url(url, action) {
-      if (action.type === "set url") {
-        return action.payload;
-      }
-      return url;
-    },
-    routes(url, action) {
-      if (action.type === "set routes") {
-        return action.payload;
-      }
-      return url;
-    },
-  } as ReducerMap,
-  dispatch(action: Action): void {
+  dispatch(action: Action) {
     console.log("store:dispatch", action);
-    const fn = mapObjIndexed((value, key) =>
-      key in this.reducers
-        ? this.reducers[key as keyof State](value as any, action)
-        : value
+    this.state$.next(
+      mapObjIndexed(
+        (value, key) =>
+          key in this.reducers
+            ? (this.reducers[key as keyof TState] as any)(value, action)
+            : value,
+        this.state$.value as any
+      ) as TState
     );
-    const newState = fn(this.state.value) as State;
-    console.log(newState);
-    this.state.next(newState);
-  },
-};
+  }
+
+  selectState<K extends keyof TState>(key: K): Observable<TState[K]>;
+  selectState<R>(fn: (state: TState) => R): Observable<R>;
+  selectState<
+    K extends keyof TState,
+    R extends TState[keyof TState] = TState[K]
+  >(selector: ((state: TState) => R) | K) {
+    const actualSelector = (
+      typeof selector === "function"
+        ? map(selector)
+        : typeof selector === "string"
+        ? map(prop(selector))
+        : null
+    ) as OperatorFunction<TState, TState[keyof TState]> | null;
+    if (!actualSelector) {
+      throw new Error("Invalid state selector");
+    }
+    return this.state$.pipe(actualSelector, distinctUntilChanged());
+  }
+}

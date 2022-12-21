@@ -1,6 +1,6 @@
 import RxFM, { DefaultProps } from "rxfm";
 import { Observable, map } from "rxjs";
-import { setState } from "../../store/state";
+import { store } from "../../app/app";
 
 export const Link = ({
   href,
@@ -12,7 +12,10 @@ export const Link = ({
       onClick={href.pipe(
         map((url) => (e) => {
           e.preventDefault();
-          setState({ url });
+          store.dispatch({
+            type: "set url",
+            payload: url,
+          });
         })
       )}
     >

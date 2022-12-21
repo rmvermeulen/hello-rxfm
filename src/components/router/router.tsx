@@ -1,7 +1,7 @@
 import { RamdaPath, intersperse, path } from "rambda";
 import RxFM, { ElementChild } from "rxfm";
 import { combineLatest, defer, switchMap } from "rxjs";
-import { selectState, setState } from "../../store/state";
+import { store } from "../../app/app";
 
 export type RouteDetails = {
   name: string;
@@ -11,12 +11,17 @@ export type RouteDetails = {
 export type RouteMap = { [href: string]: ElementChild | RouteDetails };
 
 export const AppRouter = () => {
-  const url = selectState("url");
+  const url = store.selectState("url");
   return (
     <div>
-      <input value={url} onChange={(e) => setState({ url: e.target.value })} />
+      <input
+        value={url}
+        onChange={(e) =>
+          store.dispatch({ type: "set url", payload: e.target.value })
+        }
+      />
       {
-        combineLatest([url, selectState("routes")]).pipe(
+        combineLatest([url, store.selectState("routes")]).pipe(
           switchMap(([url, routes]) =>
             defer(() => {
               const getMatch = path<ElementChild | RouteDetails>(

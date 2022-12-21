@@ -9,9 +9,9 @@ import {
   of,
   switchMap,
 } from "rxjs";
-import { state } from "../store/state";
 import { Link } from "./router/link";
 import { RouteDetails, RouteMap } from "./router/router";
+import { store } from "../app/app";
 
 const RecursiveRouteList = ({
   routes,
@@ -62,7 +62,7 @@ export const SideBar = ({ routes$ }: { routes$: Observable<RouteMap> }) => {
   const showState$ = new BehaviorSubject(false);
   const stateJson$ = showState$.pipe(
     combineLatestWith(
-      state.pipe(
+      store.getState().pipe(
         map(
           pipe(
             evolve({ routes: Object.keys }),

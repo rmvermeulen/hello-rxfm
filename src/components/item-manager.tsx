@@ -1,7 +1,6 @@
-import { append, evolve } from "rambda";
 import RxFM from "rxfm";
 import { BehaviorSubject } from "rxjs";
-import { mapState } from "../store/state";
+import { store } from "../app/app";
 
 export const ItemManager = () => {
   const editedItem = new BehaviorSubject("");
@@ -16,11 +15,11 @@ export const ItemManager = () => {
       />
       <button
         onClick={() => {
-          mapState(
-            evolve({
-              items: append(editedItem.value) as (s: string[]) => string[],
-            })
-          );
+          store.dispatch({
+            type: "add item",
+            payload: editedItem.value,
+          });
+
           editedItem.next("");
         }}
       >
