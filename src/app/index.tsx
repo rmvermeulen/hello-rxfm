@@ -1,24 +1,69 @@
-import RxFM, { mapToComponents } from "rxfm";
+import RxFM, {
+  Component,
+  ComponentChild,
+  ElementChild,
+  mapToComponents,
+} from "rxfm";
 import {
   BehaviorSubject,
+  combineLatest,
+  defer,
   distinctUntilChanged,
   map,
+  of,
   switchMap,
   timer,
 } from "rxjs";
 
 import "./styles.css";
-import { append, assoc, evolve } from "rambda";
+import { append, assoc, evolve, prop } from "rambda";
+
+const MyHome = ({} = {}) => <p>abc</p>;
 
 const state = new BehaviorSubject({
   url: "",
+  routes: { "": MyHome, about: () => <p>The about page...</p> } as Record<
+    string,
+    ElementChild
+  >,
   items: ["some item!"],
 });
 export type State = typeof state.value;
 
 const mapState = (fn: (state: State) => State) => state.next(fn(state.value));
-const selectState = <R,>(selector: (state: State) => R) =>
-  state.pipe(map(selector), distinctUntilChanged());
+const setState = (patch: Partial<State>) =>
+  state.next({ ...state.value, ...patch });
+const selectState = <K extends keyof State, R = State[K]>(
+  selector: ((state: State) => R) | K
+) =>
+  state.pipe(
+    map(typeof selector === "string" ? prop(selector) : selector),
+    distinctUntilChanged()
+  );
+
+const AppRouter = () => {
+  const url = selectState("url");
+  return (
+    <div>
+      <input value={url} onChange={(e) => setState({ url: e.target.value })} />
+      {combineLatest([url, selectState("routes")]).pipe(
+        switchMap(([url, routes]) =>
+          defer(() => {
+            const match = (routes as any)[url];
+            return match ? (
+              <div>
+                <p>Matched route!</p>
+                {match}
+              </div>
+            ) : (
+              <pre>404 - [{url}] not found</pre>
+            );
+          })
+        )
+      )}
+    </div>
+  );
+};
 
 const ItemManager = () => {
   const editedItem = new BehaviorSubject("");
@@ -93,11 +138,11 @@ const getFragment = (url: string): string => {
 };
 
 const App = () => {
-  mapState(assoc("url", getFragment(window.location.href + "foobar")));
+  mapState(assoc("url", getFragment(window.location.href)));
 
   return (
     <div id="app">
-      <Examples />
+      <AppRouter />
     </div>
   );
 };
