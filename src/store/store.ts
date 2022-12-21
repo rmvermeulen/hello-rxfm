@@ -4,15 +4,24 @@ import {
   Observable,
   OperatorFunction,
   distinctUntilChanged,
+  from,
   map,
 } from "rxjs";
 import { Action, ReducerMap } from "./state";
 
-export class Store<TState extends Record<string, unknown>> {
+type EffectsMap<T> = {
+  [Key in keyof T]: (action: {
+    type: Key;
+    payload: unknown;
+  }) => void | Promise<void> | Observable<void>;
+};
+
+export class Store<TState extends Record<string, unknown>, TEffects = {}> {
   private readonly state$: BehaviorSubject<TState>;
   constructor(
     private readonly initialState: TState,
-    private readonly reducers: ReducerMap<TState>
+    private readonly reducers: ReducerMap<TState>,
+    private readonly effects: EffectsMap<TEffects> = {} as EffectsMap<TEffects>
   ) {
     this.state$ = new BehaviorSubject(initialState);
   }
@@ -33,6 +42,13 @@ export class Store<TState extends Record<string, unknown>> {
         this.state$.value as any
       ) as TState
     );
+    const effect = this.effects[action.type as keyof TEffects];
+    if (effect) {
+      const asyncObject = effect(action as any);
+      if (asyncObject) {
+        from(asyncObject).subscribe();
+      }
+    }
   }
 
   selectState<K extends keyof TState>(key: K): Observable<TState[K]>;

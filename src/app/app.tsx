@@ -9,29 +9,38 @@ import { Examples } from "./examples";
 import { Store } from "../store/store";
 import { append } from "rambda";
 
-export const store = new Store(initialState, {
-  url(url, action) {
-    if (action.type === "set url") {
-      return action.payload;
-    }
-    return url;
+export const store = new Store(
+  initialState,
+  {
+    url(url, action) {
+      if (action.type === "set url") {
+        return action.payload;
+      }
+      return url;
+    },
+    routes(url, action) {
+      if (action.type === "set routes") {
+        return action.payload;
+      }
+      return url;
+    },
+    items(items, action) {
+      if (action.type === "set items") {
+        return action.payload;
+      }
+      if (action.type === "add item") {
+        return append(action.payload, items);
+      }
+      return items;
+    },
   },
-  routes(url, action) {
-    if (action.type === "set routes") {
-      return action.payload;
-    }
-    return url;
-  },
-  items(items, action) {
-    if (action.type === "set items") {
-      return action.payload;
-    }
-    if (action.type === "add item") {
-      return append(action.payload, items);
-    }
-    return items;
-  },
-});
+  {
+    "set url": ({ payload }) => {
+      console.log("store:effect:set url", { payload });
+      history.pushState(window.location.href, "", `/${payload as string}`);
+    },
+  }
+);
 
 export const getRouteFragment = (url: string): string => {
   const match = url.match(/^https?:\/\/localhost:\d+\/(.*)/);
