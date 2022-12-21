@@ -1,31 +1,23 @@
-import RxFM, {
-  Component,
-  ComponentChild,
-  ElementChild,
-  mapToComponents,
-} from "rxfm";
+import RxFM, { ElementChild, mapToComponents } from "rxfm";
 import {
   BehaviorSubject,
   combineLatest,
   defer,
   distinctUntilChanged,
   map,
-  of,
   switchMap,
   timer,
 } from "rxjs";
 
+import { append, defaultTo, evolve, pipe, prop } from "rambda";
 import "./styles.css";
-import { append, assoc, evolve, prop } from "rambda";
 
 const MyHome = ({} = {}) => <p>abc</p>;
 
+type RouteMap = { [key: string]: ElementChild | RouteMap };
 const state = new BehaviorSubject({
   url: "",
-  routes: { "": MyHome, about: () => <p>The about page...</p> } as Record<
-    string,
-    ElementChild
-  >,
+  routes: {} as RouteMap,
   items: ["some item!"],
 });
 export type State = typeof state.value;
@@ -120,12 +112,41 @@ const Examples = () => {
     <div class="layout">
       <h1>Welcome to RxFM!</h1>
       <pre>url: {url$}</pre>
-      <pre>{state.pipe(map((x) => JSON.stringify(x)))}</pre>
+      <pre>
+        {state.pipe(map(pipe(evolve({ routes: Object.keys }), JSON.stringify)))}
+      </pre>
       <ul>{items$.pipe(mapToComponents((item) => <li>{item}</li>))}</ul>
       <ItemManager />
       <div>Start adding components and observables here!</div>
       <Timer />
       <ClickCounter />
+    </div>
+  );
+};
+
+const SideBar = () => {
+  return (
+    <div class="column">
+      {selectState("routes").pipe(
+        map(Object.keys),
+        mapToComponents((name) => {
+          return (
+            <li>
+              <a
+                href={name}
+                onClick={name.pipe(
+                  map((url) => (e) => {
+                    e.preventDefault();
+                    setState({ url });
+                  })
+                )}
+              >
+                {name.pipe(map((x) => x || "home"))}
+              </a>
+            </li>
+          );
+        })
+      )}
     </div>
   );
 };
@@ -138,10 +159,18 @@ const getFragment = (url: string): string => {
 };
 
 const App = () => {
-  mapState(assoc("url", getFragment(window.location.href)));
+  setState({
+    url: getFragment(window.location.href + "examples"),
+    routes: {
+      "": MyHome,
+      about: () => <p>The about page...</p>,
+      examples: Examples,
+    },
+  });
 
   return (
     <div id="app">
+      <SideBar />
       <AppRouter />
     </div>
   );
