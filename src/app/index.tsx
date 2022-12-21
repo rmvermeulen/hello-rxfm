@@ -1,20 +1,36 @@
-import RxFM, { ElementChild, mapToComponents } from "rxfm";
+import RxFM, { DefaultProps, ElementChild, mapToComponents } from "rxfm";
 import {
   BehaviorSubject,
+  Observable,
   combineLatest,
   defer,
   distinctUntilChanged,
+  filter,
   map,
+  of,
   switchMap,
   timer,
 } from "rxjs";
 
-import { append, defaultTo, evolve, pipe, prop } from "rambda";
+import {
+  RamdaPath,
+  append,
+  evolve,
+  intersperse,
+  path,
+  pipe,
+  prop,
+  toPairs,
+} from "rambda";
 import "./styles.css";
 
-const MyHome = ({} = {}) => <p>abc</p>;
+type RouteDetails = {
+  name: string;
+  component: ElementChild;
+  children?: RouteMap;
+};
+type RouteMap = { [href: string]: ElementChild | RouteDetails };
 
-type RouteMap = { [key: string]: ElementChild | RouteMap };
 const state = new BehaviorSubject({
   url: "",
   routes: {} as RouteMap,
@@ -38,21 +54,29 @@ const AppRouter = () => {
   return (
     <div>
       <input value={url} onChange={(e) => setState({ url: e.target.value })} />
-      {combineLatest([url, selectState("routes")]).pipe(
-        switchMap(([url, routes]) =>
-          defer(() => {
-            const match = (routes as any)[url];
-            return match ? (
-              <div>
-                <p>Matched route!</p>
-                {match}
-              </div>
-            ) : (
-              <pre>404 - [{url}] not found</pre>
-            );
-          })
-        )
-      )}
+      {
+        combineLatest([url, selectState("routes")]).pipe(
+          switchMap(([url, routes]) =>
+            defer(() => {
+              const getMatch = path<ElementChild | RouteDetails>(
+                intersperse("children", url.split("/")) as RamdaPath
+              );
+              let match = getMatch(routes);
+              console.log(
+                "RamdaPath:",
+                intersperse("children", url.split("/")),
+                { match },
+                routes
+              );
+              // return typeof match == 'function')?
+              if (typeof match === "object") {
+                match = (match as RouteDetails).component;
+              }
+              return <div>{match || <pre>404 - [{url}] not found</pre>}</div>;
+            })
+          )
+        ) as ElementChild
+      }
     </div>
   );
 };
@@ -124,30 +148,78 @@ const Examples = () => {
   );
 };
 
-const SideBar = () => {
+const Link = ({
+  href,
+  children,
+}: { href: Observable<string> } & DefaultProps) => {
   return (
-    <div class="column">
-      {selectState("routes").pipe(
-        map(Object.keys),
-        mapToComponents((name) => {
-          return (
-            <li>
-              <a
-                href={name}
-                onClick={name.pipe(
-                  map((url) => (e) => {
-                    e.preventDefault();
-                    setState({ url });
-                  })
-                )}
-              >
-                {name.pipe(map((x) => x || "home"))}
-              </a>
-            </li>
-          );
+    <a
+      href={href}
+      onClick={href.pipe(
+        map((url) => (e) => {
+          e.preventDefault();
+          setState({ url });
         })
       )}
-    </div>
+    >
+      {children}
+    </a>
+  );
+};
+
+const SideBar = ({
+  routes,
+  parentHref = "",
+}: {
+  routes: RouteMap;
+  parentHref?: string;
+}) => {
+  return (
+    <ul class="column">
+      {of(routes).pipe(
+        map((rm) => toPairs(rm)),
+        mapToComponents(
+          (args: Observable<[string, RouteMap[keyof RouteMap]]>) => {
+            // const displayName = typeof config === "object" ? config.name : name;
+            const href: Observable<string> = args.pipe(map(([x]) => x));
+            const displayName: Observable<string> = args.pipe(
+              map(([href, config]) =>
+                typeof config === "object"
+                  ? (config as RouteDetails).name
+                  : href
+              )
+            );
+            const children = args.pipe(
+              switchMap(([href, config]) =>
+                config &&
+                typeof config === "object" &&
+                "children" in config &&
+                config.children ? (
+                  <SideBar routes={config.children} parentHref={href} />
+                ) : (
+                  of(null)
+                )
+              ),
+              filter(Boolean)
+            );
+            return (
+              <li>
+                <Link
+                  href={href.pipe(
+                    map((segment) =>
+                      [parentHref, segment].filter(Boolean).join("/")
+                    )
+                  )}
+                >
+                  {displayName}
+                </Link>
+                {children}
+              </li>
+            );
+          }
+        )
+      )}
+    </ul>
   );
 };
 
@@ -162,15 +234,25 @@ const App = () => {
   setState({
     url: getFragment(window.location.href + "examples"),
     routes: {
-      "": MyHome,
+      "": { name: "Home", component: Timer },
       about: () => <p>The about page...</p>,
-      examples: Examples,
+      examples: {
+        name: "Examples",
+        component: Examples,
+        children: {
+          timer: Timer,
+          itemManager: ItemManager,
+          custom: () => <p>This is some custom code!</p>,
+        },
+      },
     },
   });
 
   return (
     <div id="app">
-      <SideBar />
+      {selectState("routes").pipe(
+        switchMap((routes) => <SideBar routes={routes} />)
+      )}
       <AppRouter />
     </div>
   );
