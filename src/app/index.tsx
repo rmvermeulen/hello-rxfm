@@ -17,9 +17,6 @@ const Examples = () => {
     <div class="layout">
       <h1>Welcome to RxFM!</h1>
       <pre>url: {url$}</pre>
-      <pre>
-        {state.pipe(map(pipe(evolve({ routes: Object.keys }), JSON.stringify)))}
-      </pre>
       <ul>{items$.pipe(mapToComponents((item) => <li>{item}</li>))}</ul>
       <ItemManager />
       <div>Start adding components and observables here!</div>
@@ -29,7 +26,7 @@ const Examples = () => {
   );
 };
 
-const getFragment = (url: string): string => {
+const getRouteFragment = (url: string): string => {
   const match = url.match(/^https?:\/\/localhost:\d+\/(.*)/);
   if (!match) return "";
   const [, fragment] = match;
@@ -38,7 +35,7 @@ const getFragment = (url: string): string => {
 
 const App = () => {
   setState({
-    url: getFragment(window.location.href + "examples"),
+    url: getRouteFragment(window.location.href + "examples"),
     routes: {
       "": { name: "Home", component: Timer },
       about: () => <p>The about page...</p>,
@@ -56,10 +53,12 @@ const App = () => {
 
   return (
     <div id="app">
-      {selectState("routes").pipe(
-        switchMap((routes) => <SideBar routes={routes} />)
-      )}
-      <AppRouter />
+      <div class="sidebar">
+        <SideBar routes$={selectState("routes")} />
+      </div>
+      <div class="layout">
+        <AppRouter />
+      </div>
     </div>
   );
 };

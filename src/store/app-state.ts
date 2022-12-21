@@ -3,13 +3,15 @@ import { BehaviorSubject, map, distinctUntilChanged } from "rxjs";
 import { RouteMap } from "../components/router/router";
 
 export type SubjectType<T> = T extends BehaviorSubject<infer X> ? X : never;
-export const state = new BehaviorSubject({
+
+export const initialState = {
   url: "",
   routes: {} as RouteMap,
   items: ["some item!"],
-});
+};
+export type State = typeof initialState;
+export const state = new BehaviorSubject(initialState);
 
-export type State = SubjectType<typeof state>;
 export type Action<T = any> = { type: string; payload: T };
 export type Reducer<K extends keyof State> = (
   state: State[K],
