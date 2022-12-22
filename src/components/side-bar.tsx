@@ -79,16 +79,20 @@ export const SideBar = ({ routes$ }: { routes$: Observable<RouteMap> }) => {
       {routes$.pipe(
         switchMap((routes) => <RecursiveRouteList routes={routes} />)
       )}
-      <button>clear persisted state</button>
+      <button
+        onClick={() => {
+          localStorage.removeItem("state");
+          console.log("cached state cleared");
+        }}
+      >
+        clear persisted state
+      </button>
       {showState$.pipe(
-        switchMap((show) => {
-          const onClick = () => showState$.next(!show);
-          return show ? (
-            <button onClick={onClick}>hide state</button>
-          ) : (
-            <button onClick={onClick}>show state</button>
-          );
-        })
+        switchMap((show) => (
+          <button onClick={() => showState$.next(!show)}>
+            {show ? "hide" : "show"} state
+          </button>
+        ))
       )}
       {stateJson$}
     </div>

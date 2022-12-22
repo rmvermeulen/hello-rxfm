@@ -26,14 +26,7 @@ export const ItemManager = () => {
       >
         Add
       </button>
-      <ul>
-        {items$.pipe(
-          mapToComponents((item) => {
-            item.subscribe((i) => console.log("item:", i));
-            return <li>{item}</li>;
-          })
-        )}
-      </ul>
+      <ul>{items$.pipe(mapToComponents((item) => <li>{item}</li>))}</ul>
     </div>
   );
 };
