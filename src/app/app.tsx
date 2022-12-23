@@ -10,9 +10,6 @@ import { OperatorFunction, debounceTime, filter, identity, tap } from "rxjs";
 import { Store } from "../store/store";
 import { Examples } from "./examples";
 
-import * as router from "rxfm-router";
-console.log(router);
-
 export const store = new Store(initialState, {
   items(items, action) {
     if (action.type === "set items") {

@@ -22,7 +22,6 @@ const RecursiveRouteList = ({
   routes: RouteMap;
   parentHref?: string;
 }) => {
-  console.log({ routes });
   const listItems = of(routes).pipe(
     map((rm) => toPairs(rm)),
     mapToComponents(
@@ -37,30 +36,15 @@ const RecursiveRouteList = ({
           )
         );
         const nestedLists$ = routeMapPairs.pipe(
-          switchMap(
-            ([href, config]) => (
-              void console.log(href, config, {
-                bool: !!(
-                  config &&
-                  typeof config === "object" &&
-                  "children" in config &&
-                  config.children &&
-                  !isEmpty(config.children)
-                ),
-              }),
-              config &&
-              typeof config === "object" &&
-              "children" in config &&
-              config.children &&
-              !isEmpty(config.children)
-                ? (void console.log("creating a route child!", config.children),
-                  (
-                    <RecursiveRouteList
-                      routes={config.children}
-                      parentHref={href}
-                    />
-                  ))
-                : of(null)
+          switchMap(([href, config]) =>
+            config &&
+            typeof config === "object" &&
+            "children" in config &&
+            config.children &&
+            !isEmpty(config.children) ? (
+              <RecursiveRouteList routes={config.children} parentHref={href} />
+            ) : (
+              of(null)
             )
           ),
           filter(Boolean)
