@@ -3,9 +3,10 @@ import { ClickCounter } from "../components/click-counter";
 import { ItemManager } from "../components/item-manager";
 import { Timer } from "../components/timer";
 import { store } from "./app";
+import { selectRouterState } from "rxfm-router";
 
 export const Examples = () => {
-  const url$ = store.selectState((x) => x.url);
+  const url$ = selectRouterState((x) => x.fullUrl);
   return (
     <div class="layout">
       <h1>Welcome to RxFM!</h1>

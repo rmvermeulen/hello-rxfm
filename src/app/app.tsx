@@ -5,10 +5,13 @@ import { Timer } from "../components/timer";
 import { Action, initialState } from "../store/state";
 
 import { append, whereEq } from "rambda";
-import { Router, updateRouterState } from "rxfm-router";
+import { Router, selectRouterState } from "rxfm-router";
 import { OperatorFunction, debounceTime, filter, identity, tap } from "rxjs";
 import { Store } from "../store/store";
 import { Examples } from "./examples";
+
+import * as router from "rxfm-router";
+console.log(router);
 
 export const store = new Store(initialState, {
   items(items, action) {
@@ -60,7 +63,7 @@ export const App = () => {
   const cachedStateJson = localStorage.getItem("state");
   if (cachedStateJson) {
     try {
-      store.replaceState(JSON.parse(cachedStateJson));
+      store.mergeState(JSON.parse(cachedStateJson));
       console.log("state replaced!", cachedStateJson);
     } catch (ex) {
       console.error(ex);
@@ -78,31 +81,28 @@ export const App = () => {
       }
     });
 
-  // setup router
-  updateRouterState({
-    route: getRouteFragment(window.location.href) || "examples",
-    routes: {
-      "": { name: "Home", component: Timer },
-      about: () => <p>The about page...</p>,
-      examples: {
-        name: "Examples",
-        component: Examples,
-        children: {
-          timer: Timer,
-          itemManager: ItemManager,
-          custom: () => <p>This is some custom code!</p>,
-        },
-      },
-    },
-  });
-
   return (
     <div id="app">
       <div class="sidebar">
-        <SideBar routes$={store.selectState("routes")} />
+        <SideBar routes$={selectRouterState("routes")} />
       </div>
       <div class="layout">
-        <Router />
+        <Router
+          route={getRouteFragment(window.location.href) || "examples"}
+          routes={{
+            "": { name: "Home", component: Timer },
+            about: () => <p>The about page...</p>,
+            examples: {
+              name: "Examples",
+              component: Examples,
+              children: {
+                timer: Timer,
+                itemManager: ItemManager,
+                custom: () => <p>This is some custom code!</p>,
+              },
+            },
+          }}
+        />
       </div>
     </div>
   );

@@ -27,6 +27,12 @@ export class Store<TState extends Record<string, unknown>, TEffects = {}> {
   replaceState(state: TState) {
     this.state$.next(state);
   }
+  mergeState(state: Partial<TState>) {
+    this.state$.next({
+      ...this.state$.value,
+      ...state,
+    });
+  }
   getState() {
     return this.state$.asObservable();
   }

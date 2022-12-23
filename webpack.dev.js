@@ -25,7 +25,8 @@ module.exports = [
         {
           test: /\.ts(x)?$/,
           loader: "ts-loader",
-          exclude: "/node_modules/",
+          exclude: (p) =>
+            /node_modules/.test(p) && !/node_modules\/rxfm-router/.test(p),
         },
         {
           test: /\.css$/i,
