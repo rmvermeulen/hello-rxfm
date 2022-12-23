@@ -1,12 +1,9 @@
 import RxFM from "rxfm";
 import { ItemManager } from "../components/item-manager";
-import { AppRouter } from "../components/router/router";
 import { SideBar } from "../components/side-bar";
 import { Timer } from "../components/timer";
 import { Action, initialState } from "../store/state";
 
-import { Examples } from "./examples";
-import { Store } from "../store/store";
 import { append, whereEq } from "rambda";
 import {
   OperatorFunction,
@@ -14,23 +11,13 @@ import {
   filter,
   identity,
   map,
-  of,
-  switchMap,
+  tap,
 } from "rxjs";
+import { Store } from "../store/store";
+import { Examples } from "./examples";
+import { Router, updateRouterState } from "rxfm-router";
 
 export const store = new Store(initialState, {
-  url(url, action) {
-    if (action.type === "set url") {
-      return action.payload;
-    }
-    return url;
-  },
-  routes(url, action) {
-    if (action.type === "set routes") {
-      return action.payload;
-    }
-    return url;
-  },
   items(items, action) {
     if (action.type === "set items") {
       return action.payload;
@@ -56,10 +43,15 @@ const createEffect = <T extends Action, R extends Action>(
     .subscribe((action: R) => store.dispatch(action));
 
 createEffect(
-  whereEq({ type: "set url" }),
-  map(({ payload }: Action) => {
-    console.log("EFFECT store:effect:set url", { payload });
-    return null;
+  whereEq({ type: "add item" }),
+  tap(({ payload }: Action) => {
+    console.log("EFFECT store:effect:add item", { payload });
+  })
+);
+createEffect(
+  whereEq({ type: "set items" }),
+  tap(({ payload }: Action) => {
+    console.log("EFFECT store:effect:set items", { payload });
   })
 );
 
@@ -92,16 +84,11 @@ export const App = () => {
         console.error(ex);
       }
     });
-  // setup router
-  const route = getRouteFragment(window.location.href);
-  store.dispatch({
-    type: "set url",
-    payload: route || "examples",
-  });
 
-  store.dispatch({
-    type: "set routes",
-    payload: {
+  // setup router
+  updateRouterState({
+    route: getRouteFragment(window.location.href) || "examples",
+    routes: {
       "": { name: "Home", component: Timer },
       about: () => <p>The about page...</p>,
       examples: {
@@ -122,7 +109,7 @@ export const App = () => {
         <SideBar routes$={store.selectState("routes")} />
       </div>
       <div class="layout">
-        <AppRouter />
+        <Router />
       </div>
     </div>
   );
