@@ -9,8 +9,7 @@ import {
   of,
   switchMap,
 } from "rxjs";
-import { Link } from "./router/link";
-import { RouteDetails, RouteMap } from "./router/router";
+import { Link, RouteDetails, RouteMap } from "rxfm-router";
 import { store } from "../app/app";
 
 const RecursiveRouteList = ({

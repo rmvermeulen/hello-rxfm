@@ -1,6 +1,6 @@
 import { prop } from "rambda";
 import { BehaviorSubject, distinctUntilChanged, map } from "rxjs";
-import { RouteMap } from "../components/router/router";
+import { type RouteMap } from "rxfm-router";
 
 export type SubjectType<T> = T extends BehaviorSubject<infer X> ? X : never;
 

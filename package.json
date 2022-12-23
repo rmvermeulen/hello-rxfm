@@ -23,7 +23,8 @@
   "dependencies": {
     "rambda": "^7.4.0",
     "rxfm": "2.1.1",
-    "rxjs": "^7.0.0"
+    "rxjs": "^7.0.0",
+    "rxjs-etc": "^10.6.2"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
