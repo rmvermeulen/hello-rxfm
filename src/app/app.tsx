@@ -5,17 +5,10 @@ import { Timer } from "../components/timer";
 import { Action, initialState } from "../store/state";
 
 import { append, whereEq } from "rambda";
-import {
-  OperatorFunction,
-  debounceTime,
-  filter,
-  identity,
-  map,
-  tap,
-} from "rxjs";
+import { Router, updateRouterState } from "rxfm-router";
+import { OperatorFunction, debounceTime, filter, identity, tap } from "rxjs";
 import { Store } from "../store/store";
 import { Examples } from "./examples";
-import { Router, updateRouterState } from "rxfm-router";
 
 export const store = new Store(initialState, {
   items(items, action) {

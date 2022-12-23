@@ -47,7 +47,8 @@ const RecursiveRouteList = ({
         );
         return (
           <li>
-            <Link href={href$}>{displayName$}</Link>
+            {/* <Link href={href$}>{displayName$}</Link> */}
+            <a href={href$}>{displayName$}</a>
             {nestedLists$}
           </li>
         );
