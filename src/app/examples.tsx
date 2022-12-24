@@ -1,6 +1,6 @@
 import RxFM from "rxfm";
 import { ClickCounter } from "../components/click-counter";
-import { ItemManager } from "../components/item-manager";
+import { Todos } from "../components/todos";
 import { Timer } from "../components/timer";
 import { store } from "./app";
 import { selectRouterState } from "rxfm-router";
@@ -11,7 +11,7 @@ export const Examples = () => {
     <div class="layout">
       <h1>Welcome to RxFM!</h1>
       <pre>url: {url$}</pre>
-      <ItemManager />
+      <Todos />
       <Timer />
       <ClickCounter />
     </div>

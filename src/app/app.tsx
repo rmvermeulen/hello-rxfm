@@ -1,17 +1,30 @@
 import RxFM from "rxfm";
-import { ItemManager } from "../components/item-manager";
+import { Todos } from "../components/todos";
 import { SideBar } from "../components/side-bar";
 import { Timer } from "../components/timer";
-import { Action, initialState } from "../store/state";
+import { Action } from "../store/state";
 
 import { append, whereEq } from "rambda";
 import { Router, selectRouterStateKey } from "rxfm-router";
 import { OperatorFunction, debounceTime, filter, identity, tap } from "rxjs";
 import { Store } from "../store/store";
 import { Examples } from "./examples";
+import { Props } from "../utils";
+
+export type TodoItem = {
+  id: number;
+  text: string;
+  isCompleted: boolean;
+};
+export type AppState = {
+  todos: TodoItem[];
+};
+export const initialState: AppState = {
+  todos: ["some item!"].map((text, id) => ({ id, text, isCompleted: false })),
+};
 
 export const store = new Store(initialState, {
-  items(items, action) {
+  todos(items, action) {
     if (action.type === "set items") {
       return action.payload;
     }
@@ -93,7 +106,18 @@ export const App = () => {
               view: Examples,
               children: {
                 timer: Timer,
-                itemManager: ItemManager,
+                todos: {
+                  name: "Todos",
+                  view: Todos,
+                  children: {
+                    ":id": {
+                      name: "item 1",
+                      view: (/*{id}: Props<{id:TodoItem["id"]}>*/) => (
+                        <p>id = {"{id}"}</p>
+                      ),
+                    },
+                  },
+                },
                 custom: () => <p>This is some custom code!</p>,
               },
             },
