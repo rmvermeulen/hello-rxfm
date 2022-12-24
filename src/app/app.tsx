@@ -80,11 +80,17 @@ export const App = () => {
         <Router
           url={new URL("examples", window.location.href)}
           routes={{
-            "": { name: "Home", component: Timer },
-            about: () => <p>The about page...</p>,
+            "": {
+              name: "Home",
+              view: Timer,
+            },
+            about: {
+              name: "About",
+              view: () => <p>The about page...</p>,
+            },
             examples: {
               name: "Examples",
-              component: Examples,
+              view: Examples,
               children: {
                 timer: Timer,
                 itemManager: ItemManager,
