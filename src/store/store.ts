@@ -10,7 +10,7 @@ import {
 } from "rxjs";
 import { Action, ReducerMap } from "./state";
 
-export class Store<TState extends Record<string, unknown>, TEffects = {}> {
+export class Store<TState extends Record<string, unknown> = {}> {
   private readonly state$: BehaviorSubject<TState>;
   private readonly actions$: Subject<Action>;
 
