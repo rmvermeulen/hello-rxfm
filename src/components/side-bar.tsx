@@ -1,10 +1,11 @@
-import { filter as filterObject, evolve, isEmpty, pipe, toPairs } from "rambda";
-import { combineLatestObject } from "rxjs-etc";
+import { evolve, filter as filterObject, isEmpty, toPairs } from "rambda";
 import RxFM, { mapToComponents } from "rxfm";
+import { Link, RouteMap, selectRouterState } from "rxfm-router";
+import { RouteConfig } from "rxfm-router/src/types";
+import { isRouteConfig } from "rxfm-router/src/utils";
 import {
   BehaviorSubject,
   Observable,
-  OperatorFunction,
   combineLatest,
   combineLatestWith,
   filter,
@@ -13,7 +14,6 @@ import {
   of,
   switchMap,
 } from "rxjs";
-import { Link, RouteDetails, RouteMap, selectRouterState } from "rxfm-router";
 import { store } from "../app/app";
 
 const RecursiveRouteList = ({
@@ -25,10 +25,8 @@ const RecursiveRouteList = ({
 }) => {
   const listItems = of(routes).pipe(
     map<RouteMap, RouteMap>(
-      filterObject((v) =>
-        typeof v === "object"
-          ? typeof (v as RouteDetails).name === "string"
-          : true
+      filterObject((v: RouteOptions) =>
+        isRouteConfig(v) ? typeof v.name === "string" : true
       ) as any
     ),
     map((rm: RouteMap) => toPairs(rm)),
@@ -41,7 +39,7 @@ const RecursiveRouteList = ({
         const displayName$: Observable<string> = routeMapPairs.pipe(
           map(([href, config]) =>
             typeof config === "object"
-              ? ((config as RouteDetails).name as string)
+              ? ((config as RouteOptionsObject).name as string)
               : href
           )
         );
