@@ -6,7 +6,7 @@ import { store } from "./app";
 import { selectRouterState } from "rxfm-router";
 
 export const Examples = () => {
-  const url$ = selectRouterState((x) => x.fullUrl);
+  const url$ = selectRouterState((x) => x.url.href);
   return (
     <div class="layout">
       <h1>Welcome to RxFM!</h1>

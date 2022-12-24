@@ -5,7 +5,7 @@ import { Timer } from "../components/timer";
 import { Action, initialState } from "../store/state";
 
 import { append, whereEq } from "rambda";
-import { Router, selectRouterState } from "rxfm-router";
+import { Router, selectRouterStateKey } from "rxfm-router";
 import { OperatorFunction, debounceTime, filter, identity, tap } from "rxjs";
 import { Store } from "../store/store";
 import { Examples } from "./examples";
@@ -48,13 +48,6 @@ createEffect(
   })
 );
 
-export const getRouteFragment = (url: string): string => {
-  const match = url.match(/^https?:\/\/localhost:\d+\/(.*)/);
-  if (!match) return "";
-  const [, fragment] = match;
-  return fragment;
-};
-
 export const App = () => {
   // setup storage
   const cachedStateJson = localStorage.getItem("state");
@@ -81,11 +74,11 @@ export const App = () => {
   return (
     <div id="app">
       <div class="sidebar">
-        <SideBar routes$={selectRouterState("routes")} />
+        <SideBar routes$={selectRouterStateKey("routes")} />
       </div>
       <div class="layout">
         <Router
-          route={getRouteFragment(window.location.href) || "examples"}
+          url={new URL("examples", window.location.href)}
           routes={{
             "": { name: "Home", component: Timer },
             about: () => <p>The about page...</p>,
