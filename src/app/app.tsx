@@ -5,7 +5,7 @@ import { Timer } from "../components/timer";
 import { Action } from "../store/state";
 
 import { append, whereEq } from "rambda";
-import { Router, selectRouterStateKey } from "rxfm-router";
+import { RouteDetails, Router, selectRouterStateKey } from "rxfm-router";
 import { OperatorFunction, debounceTime, filter, identity, tap } from "rxjs";
 import { Store } from "../store/store";
 import { Examples } from "./examples";
@@ -91,7 +91,6 @@ export const App = () => {
       </div>
       <div class="layout">
         <Router
-          url={new URL("examples", window.location.href)}
           routes={{
             "": {
               name: "Home",
@@ -99,7 +98,11 @@ export const App = () => {
             },
             about: {
               name: "About",
-              view: () => <p>The about page...</p>,
+              view: () => (
+                <p>
+                  The <em>inline</em> about page...
+                </p>
+              ),
             },
             examples: {
               name: "Examples",
@@ -111,14 +114,11 @@ export const App = () => {
                   view: Todos,
                   children: {
                     ":id": {
-                      name: "item 1",
-                      view: (/*{id}: Props<{id:TodoItem["id"]}>*/) => (
-                        <p>id = {"{id}"}</p>
-                      ),
-                    },
+                      view: ({ id }) => <p>id = {id}</p>,
+                    } as RouteDetails<{ id: TodoItem["id"] }>,
                   },
                 },
-                custom: () => <p>This is some custom code!</p>,
+                inline: () => <p>This is an inline component!</p>,
               },
             },
           }}

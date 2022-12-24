@@ -1,9 +1,10 @@
-import { evolve, isEmpty, pipe, toPairs } from "rambda";
+import { filter as filterObject, evolve, isEmpty, pipe, toPairs } from "rambda";
 import { combineLatestObject } from "rxjs-etc";
 import RxFM, { mapToComponents } from "rxfm";
 import {
   BehaviorSubject,
   Observable,
+  OperatorFunction,
   combineLatest,
   combineLatestWith,
   filter,
@@ -23,7 +24,14 @@ const RecursiveRouteList = ({
   parentHref?: string;
 }) => {
   const listItems = of(routes).pipe(
-    map((rm) => toPairs(rm)),
+    map<RouteMap, RouteMap>(
+      filterObject((v) =>
+        typeof v === "object"
+          ? typeof (v as RouteDetails).name === "string"
+          : true
+      ) as any
+    ),
+    map((rm: RouteMap) => toPairs(rm)),
     mapToComponents(
       (routeMapPairs: Observable<[string, RouteMap[keyof RouteMap]]>) => {
         // const displayName = typeof config === "object" ? config.name : name;
@@ -32,7 +40,9 @@ const RecursiveRouteList = ({
         );
         const displayName$: Observable<string> = routeMapPairs.pipe(
           map(([href, config]) =>
-            typeof config === "object" ? (config as RouteDetails).name : href
+            typeof config === "object"
+              ? ((config as RouteDetails).name as string)
+              : href
           )
         );
         const nestedLists$ = routeMapPairs.pipe(
@@ -76,6 +86,8 @@ export const SideBar = ({ routes$ }: { routes$: Observable<RouteMap> }) => {
       {routes$.pipe(
         switchMap((routes) => <RecursiveRouteList routes={routes} />)
       )}
+      <Link href={of("/examples/todo/123")}>Todo #123</Link>
+      <Link href={of("/examples/todo/127")}>Todo #127</Link>
       <button
         onClick={() => {
           localStorage.removeItem("state");
