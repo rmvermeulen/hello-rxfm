@@ -1,10 +1,4 @@
-import {
-  defaultTo,
-  evolve,
-  filter as filterObject,
-  isEmpty,
-  toPairs,
-} from "rambda";
+import { defaultTo, evolve, isEmpty, toPairs } from "rambda";
 import RxFM, { mapToComponents } from "rxfm";
 import { Link, RouteMap, selectRouterState } from "rxfm-router";
 import {
