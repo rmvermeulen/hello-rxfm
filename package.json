@@ -1,14 +1,13 @@
 {
-  "name": "rxfm-starter",
-  "version": "0.0.7",
-  "author": "Alden Laslett",
+  "name": "hello-rxfm",
+  "version": "1.0.0",
+  "author": "Rasmus Vermeulen",
   "description": "A starter project for the RxFM web framework.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/alden12/rxfm-starter.git"
+    "url": "https://github.com/rmvermeulen/hello-rxfm.git"
   },
-  "homepage": "https://github.com/alden12/rxfm-starter",
   "scripts": {
     "dev": "webpack serve --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
@@ -18,7 +17,7 @@
   "dependencies": {
     "rambda": "^7.4.0",
     "rxfm": "2.1.1",
-    "rxfm-router": "github:rmvermeulen/rxfm-router",
+    "rxfm-router": "github:rmvermeulen/rxfm-router#v1.0.0",
     "rxjs": "^7.0.0",
     "rxjs-etc": "^10.6.2"
   },
