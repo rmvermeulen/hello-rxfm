@@ -34,6 +34,10 @@ module.exports = [
         },
       ],
     },
-    plugins: [new HtmlWebpackPlugin()],
+    plugins: [
+      new HtmlWebpackPlugin({
+        favicon: path.resolve(__dirname, "images/favicon-144x144.png"),
+      }),
+    ],
   },
 ];
