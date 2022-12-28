@@ -1,13 +1,19 @@
-import RxFM from "rxfm";
-import { SideBar } from "../components/side-bar";
-import { Timer } from "../components/timer";
-import { Todos } from "../components/todos";
-import { Action } from "../store/state";
 import { append, whereEq } from "rambda";
-import { RouteConfig, Router, selectRouterStateKey } from "rxfm-router";
-import { OperatorFunction, debounceTime, filter, identity, tap } from "rxjs";
+import RxFM from "rxfm";
+import { Router, navigateTo, selectRouterStateKey } from "rxfm-router";
+import {
+  BehaviorSubject,
+  OperatorFunction,
+  debounceTime,
+  filter,
+  identity,
+  map,
+  tap,
+} from "rxjs";
+import { SideBar } from "../components/side-bar";
+import { Action } from "../store/state";
 import { Store } from "../store/store";
-import { Examples } from "./examples";
+import { appRoutes } from "./app-routes";
 
 export type TodoItem = {
   id: number;
@@ -82,34 +88,27 @@ export const App = () => {
       }
     });
 
-  const appRoutes = {
-    "": Timer,
-    about: () => (
-      <p>
-        The <em>inline</em> about page...
-      </p>
-    ),
-    examples: {
-      view: Examples,
-      children: {
-        timer: Timer,
-        todos: {
-          view: Todos,
-          children: {
-            ":id": {
-              view: ({ id }) => <p>id = {id}</p>,
-            } as RouteConfig<{ id: TodoItem["id"] }>,
-          },
-        },
-        inline: () => <p>This is an inline component!</p>,
-      },
-    },
-  };
+  const enteredRoute = new BehaviorSubject("");
 
   return (
     <div id="app">
       <div class="sidebar">
-        <SideBar routes$={selectRouterStateKey("routes")} />
+        <input type="text" onInput={(e) => enteredRoute.next(e.target.value)} />
+        <button onClick={() => navigateTo(enteredRoute.value)}>
+          navigate!
+        </button>
+        <SideBar
+          routes$={selectRouterStateKey("routes").pipe(
+            map((x) => [
+              x,
+              {
+                "": "Home",
+                "examples/timer": "Timer example",
+                "examples/todos": "Todos example",
+              },
+            ])
+          )}
+        />
       </div>
       <div class="layout">
         <Router routes={appRoutes} />
