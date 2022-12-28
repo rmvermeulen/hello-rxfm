@@ -1,15 +1,13 @@
 import RxFM from "rxfm";
-import { Todos } from "../components/todos";
 import { SideBar } from "../components/side-bar";
 import { Timer } from "../components/timer";
+import { Todos } from "../components/todos";
 import { Action } from "../store/state";
-
 import { append, whereEq } from "rambda";
-import { RouteDetails, Router, selectRouterStateKey } from "rxfm-router";
+import { RouteConfig, Router, selectRouterStateKey } from "rxfm-router";
 import { OperatorFunction, debounceTime, filter, identity, tap } from "rxjs";
 import { Store } from "../store/store";
 import { Examples } from "./examples";
-import { Props } from "../utils";
 
 export type TodoItem = {
   id: number;
@@ -84,45 +82,39 @@ export const App = () => {
       }
     });
 
+  const appRoutes = {
+    "": {
+      view: Timer,
+    },
+    about: () => (
+      <p>
+        The <em>inline</em> about page...
+      </p>
+    ),
+    examples: {
+      view: Examples,
+      children: {
+        timer: Timer,
+        todos: {
+          view: Todos,
+          children: {
+            ":id": {
+              view: ({ id }) => <p>id = {id}</p>,
+            } as RouteConfig<{ id: TodoItem["id"] }>,
+          },
+        },
+        inline: () => <p>This is an inline component!</p>,
+      },
+    },
+  };
+
   return (
     <div id="app">
       <div class="sidebar">
         <SideBar routes$={selectRouterStateKey("routes")} />
       </div>
       <div class="layout">
-        <Router
-          routes={{
-            "": {
-              name: "Home",
-              view: Timer,
-            },
-            about: {
-              name: "About",
-              view: () => (
-                <p>
-                  The <em>inline</em> about page...
-                </p>
-              ),
-            },
-            examples: {
-              name: "Examples",
-              view: Examples,
-              children: {
-                timer: Timer,
-                todos: {
-                  name: "Todos",
-                  view: Todos,
-                  children: {
-                    ":id": {
-                      view: ({ id }) => <p>id = {id}</p>,
-                    } as RouteDetails<{ id: TodoItem["id"] }>,
-                  },
-                },
-                inline: () => <p>This is an inline component!</p>,
-              },
-            },
-          }}
-        />
+        <Router routes={appRoutes} />
       </div>
     </div>
   );

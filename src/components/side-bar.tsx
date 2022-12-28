@@ -1,8 +1,6 @@
 import { evolve, filter as filterObject, isEmpty, toPairs } from "rambda";
 import RxFM, { mapToComponents } from "rxfm";
 import { Link, RouteMap, selectRouterState } from "rxfm-router";
-import { RouteConfig } from "rxfm-router/src/types";
-import { isRouteConfig } from "rxfm-router/src/utils";
 import {
   BehaviorSubject,
   Observable,
@@ -24,11 +22,6 @@ const RecursiveRouteList = ({
   parentHref?: string;
 }) => {
   const listItems = of(routes).pipe(
-    map<RouteMap, RouteMap>(
-      filterObject((v: RouteOptions) =>
-        isRouteConfig(v) ? typeof v.name === "string" : true
-      ) as any
-    ),
     map((rm: RouteMap) => toPairs(rm)),
     mapToComponents(
       (routeMapPairs: Observable<[string, RouteMap[keyof RouteMap]]>) => {
@@ -36,13 +29,7 @@ const RecursiveRouteList = ({
         const href$: Observable<string> = routeMapPairs.pipe(
           map(([segment]) => [parentHref, segment].filter(Boolean).join("/"))
         );
-        const displayName$: Observable<string> = routeMapPairs.pipe(
-          map(([href, config]) =>
-            typeof config === "object"
-              ? ((config as RouteOptionsObject).name as string)
-              : href
-          )
-        );
+        const displayName$: Observable<string> = href$;
         const nestedLists$ = routeMapPairs.pipe(
           switchMap(([href, config]) =>
             config &&
@@ -71,11 +58,13 @@ const RecursiveRouteList = ({
 
 export const SideBar = ({ routes$ }: { routes$: Observable<RouteMap> }) => {
   const showState$ = new BehaviorSubject(false);
-  const stateJson$ = combineLatest([
-    store.getState(),
-    selectRouterState(identity).pipe(map(evolve({ routes: Object.keys }))),
-  ]).pipe(
-    map(([app, router]) => JSON.stringify({ app, router }, null, 2)),
+  const stateJson$ = combineLatest({
+    app: store.getState(),
+    router: selectRouterState(identity).pipe(
+      map(evolve({ routes: Object.keys }))
+    ),
+  }).pipe(
+    map(({ app, router }) => JSON.stringify({ app, router }, null, 2)),
     combineLatestWith(showState$),
     switchMap(([json, show]) => (show ? <pre>{json}</pre> : of(null)))
   );
