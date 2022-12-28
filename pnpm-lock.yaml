@@ -9,6 +9,7 @@ specifiers:
   eslint: ^7.26.0
   html-webpack-plugin: ^5.3.1
   jest: ^26.6.3
+  prettier: ^2.8.1
   rambda: ^7.4.0
   rxfm: 2.1.1
   rxfm-router: github:rmvermeulen/rxfm-router
@@ -38,6 +39,7 @@ devDependencies:
   eslint: 7.32.0
   html-webpack-plugin: 5.5.0_webpack@5.75.0
   jest: 26.6.3
+  prettier: 2.8.1
   style-loader: 2.0.0_webpack@5.75.0
   ts-jest: 26.5.6_vxa7amr3o4p5wmsiameezakoli
   ts-loader: 9.4.2_3fkjkrd3audxnith3e7fo4fnxi
@@ -4942,6 +4944,12 @@ packages:
   /prelude-ls/1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
+    dev: true
+
+  /prettier/2.8.1:
+    resolution: {integrity: sha512-lqGoSJBQNJidqCHE80vqZJHWHRFoNYsSpP9AjFhlhi9ODCJA541svILes/+/1GM3VaL/abZi7cpFzOpdR9UPKg==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
     dev: true
 
   /pretty-error/4.0.0:
