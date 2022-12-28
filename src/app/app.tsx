@@ -89,14 +89,22 @@ export const App = () => {
     });
 
   const enteredRoute = new BehaviorSubject("");
+  const gotoEnteredRoute = () => {
+    navigateTo(enteredRoute.value);
+    // enteredRoute.next("");
+  };
 
   return (
     <div id="app">
       <div class="sidebar">
-        <input type="text" onInput={(e) => enteredRoute.next(e.target.value)} />
-        <button onClick={() => navigateTo(enteredRoute.value)}>
-          navigate!
-        </button>
+        <input
+          type="text"
+          value={enteredRoute}
+          onInput={(e) => enteredRoute.next(e.target.value)}
+          onKeyDown={(e) => {
+            e.key === "Enter" && gotoEnteredRoute();
+          }}
+        />
         <SideBar
           routes$={selectRouterStateKey("routes").pipe(
             map((x) => [
