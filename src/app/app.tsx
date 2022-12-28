@@ -83,9 +83,7 @@ export const App = () => {
     });
 
   const appRoutes = {
-    "": {
-      view: Timer,
-    },
+    "": Timer,
     about: () => (
       <p>
         The <em>inline</em> about page...

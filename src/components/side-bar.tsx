@@ -1,4 +1,10 @@
-import { evolve, filter as filterObject, isEmpty, toPairs } from "rambda";
+import {
+  defaultTo,
+  evolve,
+  filter as filterObject,
+  isEmpty,
+  toPairs,
+} from "rambda";
 import RxFM, { mapToComponents } from "rxfm";
 import { Link, RouteMap, selectRouterState } from "rxfm-router";
 import {
@@ -29,7 +35,9 @@ const RecursiveRouteList = ({
         const href$: Observable<string> = routeMapPairs.pipe(
           map(([segment]) => [parentHref, segment].filter(Boolean).join("/"))
         );
-        const displayName$: Observable<string> = href$;
+        const displayName$: Observable<string> = href$.pipe(
+          map(defaultTo("Home"))
+        );
         const nestedLists$ = routeMapPairs.pipe(
           switchMap(([href, config]) =>
             config &&
