@@ -18,7 +18,7 @@
   "dependencies": {
     "rambda": "^7.4.0",
     "rxfm": "2.1.1",
-    "rxfm-router": "link:/mnt/data/Projects/hello-rxfm/lib/rxfm-router",
+    "rxfm-router": "github:rmvermeulen/rxfm-router",
     "rxjs": "^7.0.0",
     "rxjs-etc": "^10.6.2"
   },
