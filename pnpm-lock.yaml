@@ -26,7 +26,7 @@ specifiers:
 dependencies:
   rambda: 7.4.0
   rxfm: 2.1.1_rxjs@7.8.0
-  rxfm-router: github.com/rmvermeulen/rxfm-router/0295abdd3acf2f4d45377577880fc4d1f287c362_rxfm@2.1.1
+  rxfm-router: github.com/rmvermeulen/rxfm-router/af01737e06831480afe6c2c8820813728a0612d0_rxfm@2.1.1
   rxjs: 7.8.0
   rxjs-etc: 10.6.2_rxjs@7.8.0
 
@@ -6637,9 +6637,9 @@ packages:
       yargs-parser: 18.1.3
     dev: true
 
-  github.com/rmvermeulen/rxfm-router/0295abdd3acf2f4d45377577880fc4d1f287c362_rxfm@2.1.1:
-    resolution: {tarball: https://codeload.github.com/rmvermeulen/rxfm-router/tar.gz/0295abdd3acf2f4d45377577880fc4d1f287c362}
-    id: github.com/rmvermeulen/rxfm-router/0295abdd3acf2f4d45377577880fc4d1f287c362
+  github.com/rmvermeulen/rxfm-router/af01737e06831480afe6c2c8820813728a0612d0_rxfm@2.1.1:
+    resolution: {tarball: https://codeload.github.com/rmvermeulen/rxfm-router/tar.gz/af01737e06831480afe6c2c8820813728a0612d0}
+    id: github.com/rmvermeulen/rxfm-router/af01737e06831480afe6c2c8820813728a0612d0
     name: rxfm-router
     version: 1.1.0
     prepare: true
