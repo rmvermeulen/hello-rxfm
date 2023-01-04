@@ -1,7 +1,8 @@
-import { append, toString } from "rambda";
+import { append, range, toString } from "rambda";
 import RxFM, { ElementType } from "rxfm";
 import {
   Observable,
+  defer,
   delay,
   firstValueFrom,
   lastValueFrom,
@@ -11,6 +12,9 @@ import {
   scan,
 } from "rxjs";
 import { App } from "./app/app";
+
+const simpleTimeout = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 const fc = ({ text }: { text: string }) => (
   <div>
@@ -25,18 +29,31 @@ describe("App", () => {
 
   test("async markup", async () => {
     const nrs = of(0, 1, 2, 3, 4).pipe(
-      mergeMap((n) => of(n).pipe(delay(n * 250))),
+      mergeMap((n) => of(n).pipe(delay(n * 25))),
       scan((acc, nr) => append(nr, acc), [] as number[]),
       map(toString)
     );
-    const rxMarkup = <p>number = {nrs}</p>;
+    const rxMarkup = defer(() => <p>number = {nrs}</p>);
     expect(await firstValueFrom(rxMarkup)).toMatchInlineSnapshot(`<p />`);
-    expect(await lastValueFrom(rxMarkup)).toMatchInlineSnapshot(`
+    const value = await firstValueFrom(rxMarkup);
+
+    for (const _ of range(0, 10)) {
+      expect(value).toMatchInlineSnapshot(`<p />`);
+      await simpleTimeout(250);
+    }
+    const lastValue = await lastValueFrom(rxMarkup);
+    expect(lastValue.firstChild?.textContent).toMatchInlineSnapshot(
+      `"number = "`
+    );
+    expect(lastValue).toMatchInlineSnapshot(`
       <p>
         number = 
         0,1,2,3,4
       </p>
     `);
+    // expect(value).not.toEqual(lastValue);
+    // await simpleTimeout(500);
+    // expect(value).toEqual(lastValue);
     expect(
       await lastValueFrom(
         rxMarkup.pipe(
